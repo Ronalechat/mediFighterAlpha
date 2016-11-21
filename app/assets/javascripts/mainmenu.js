@@ -30,9 +30,13 @@ mediFighter.MainMenu.prototype = {
     versionText.anchor.set(0.5, 0.5);
     versionText.fixedToCamera = true;
   },
+  update: function() {
+    this.state.start('LevelTest')
+  },
 
   clicked: function (pointer) {
     console.log("I am being called");
+
   }
 
 };

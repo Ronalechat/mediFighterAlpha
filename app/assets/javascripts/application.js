@@ -14,6 +14,7 @@
 //= require jquery_ujs
 //= require phaser.js
 //= require boot.js
+//= require animationsJSON.js
 //= require preload.js
 //= require mainmenu.js
 //= require init.js

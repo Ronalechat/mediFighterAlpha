@@ -1,3 +1,29 @@
+var mediFighter = mediFighter || {}
+
+mediFighter.gameStates = {
+    // Movement, defence, combat, and other attack move states
+    standing: ["movingForward", "movingBackward", "crouching", "standBlocking", "jumping", "forwardJump", "backwardJump", "hit", "attacking", "stunned", "throw", "knockedDown", "thrown"],
+    movingForward: ["attacking", "standing", "crouching", "standBlocking", "forwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"],
+    movingBackward: ["attacking", "standing", "crouching", "standBlocking", "backwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"],
+    crouching: ["standing", "stunned", "knockedDown", "crouchBlocking", "hit", "attacking"],
+    standBlocking: ["blockHit", "stunned", "knockedDown"],
+    crouchBlocking: ["blockHit", "stunned", "knockedDown"],
+    jumping: ["attacking", "knockedDown"],
+    forwardJump: ["attacking", "knockedDown"],
+    backwardJump: ["attacking", "knockedDown"],
+    hit: ["standing", "thrown", "stunned", "knockedDown"],
+    blockHit: ["blocking"],
+    attacking:["attacking", "standing", "hit", "stunned", "knockedDown"],
+    throw: ["standing"],
+    thrown: ["stunned", "knockedDown"],
+    stunned: ["standing", "hit", "knockedDown", "stunned"],
+    knockedDown: ["standing"]
+
+    //Environmental states:
+    // Entrenched (Effect only lasts while in mud)
+    // Waterlogged (Effect lasts while in certain depth of water - effect lasts for a short time after getting clear of water)
+};
+
 /*
 states:
 standing
@@ -53,6 +79,7 @@ player = {
 
 
 on keypress:
+var currentState = ''
   var newState = getMoveForKey(keypress) // Key press action
 
   var nextStates = knightStates[player.currentState] // Potential next states, based on current state
@@ -60,30 +87,4 @@ on keypress:
   if nextStates.includes(newState) // Check if the state is allowed
     do it!
 
-
-
-var knightStates = {
-  // Movement, defence, combat, and other attack move states
-  standing: [movingForward, movingBackward, crouching, standBlocking, jumping, forwardJump, backwardJump, hit, attacking, stunned, throw, knockedDown, thrown],
-  movingForward: [attacking, standing, crouching, standBlocking, forwardJump, hit, stunned, knockedDown, throw, thrown],
-  movingBackward: [attacking, standing, crouching, standBlocking, backwardJump, hit, stunned, knockedDown, throw, thrown],
-  crouching: [standing, stunned, knockedDown, crouchBlocking, hit, attacking],
-  standBlocking: [blockHit, stunned, knockedDown],
-  crouchBlocking: [blockHit, stunned, knockedDown],
-  jumping: [attacking, knockedDown],
-  forwardJump: [attacking, knockedDown],
-  backwardJump: [attacking, knockedDown],
-  hit: [standing, thrown, stunned, knockedDown],
-  blockHit: [blocking],
-  attacking:[attacking, standing, hit, stunned, knockedDown],
-  throw: standing,
-  thrown: [stunned, knockedDown],
-  stunned: [standing, hit, knockedDown, stunned],
-  knockedDown: standing
-
-  //Environmental states:
-  // Entrenched (Effect only lasts while in mud)
-  // Waterlogged (Effect lasts while in certain depth of water - effect lasts for a short time after getting clear of water)
-
-  }
 */
