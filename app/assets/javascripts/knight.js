@@ -1,19 +1,53 @@
 var mediFighter = mediFighter || {}
 
+
+// mediFighter.stateData = {
+//   standing:
+// };
+
 mediFighter.gameStates = {
     // Movement, defence, combat, and other attack move states
-    standing: ["movingForward", "movingBackward", "crouching", "standBlocking", "jumping", "forwardJump", "backwardJump", "hit", "attacking", "stunned", "throw", "knockedDown", "thrown"],
-    movingForward: ["attacking", "standing", "crouching", "standBlocking", "forwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"],
-    movingBackward: ["attacking", "standing", "crouching", "standBlocking", "backwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"],
-    crouching: ["standing", "stunned", "knockedDown", "crouchBlocking", "hit", "attacking"],
-    standBlocking: ["blockHit", "stunned", "knockedDown"],
+    standing: {
+      animation: 'idle',
+      update: function() {
+
+      },
+      nextStates: ["moveForward", "moveBackward", "crouching", "standBlocking", "jumping", "forwardJump", "backwardJump", "hit", "attacking", "stunned", "throw", "knockedDown", "thrown"]
+    },
+    moveForward:{
+      animation: "moveForward",
+      nextStates: ["attacking", "standing", "crouching", "standBlocking", "forwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"]
+    },
+    moveBackward: {
+      animation: "moveBackward",
+      nextStates: ["attacking", "standing", "crouching", "standBlocking", "backwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"]
+    },
+    crouching:{
+      animation: 'crouching',
+      nextStates:["standing", "stunned", "knockedDown", "crouchBlocking", "blockHit", "hit", "attacking"]
+    },
+    standBlocking:{
+      animation: "block",
+      nextStates: ["blockHit", "stunned", "knockedDown"]
+    },
     crouchBlocking: ["blockHit", "stunned", "knockedDown"],
-    jumping: ["attacking", "knockedDown"],
+    jumping: {
+      animation: 'vertJump',
+      nextStates:["attacking", "knockedDown"]
+    },
     forwardJump: ["attacking", "knockedDown"],
     backwardJump: ["attacking", "knockedDown"],
     hit: ["standing", "thrown", "stunned", "knockedDown"],
     blockHit: ["blocking"],
     attacking:["attacking", "standing", "hit", "stunned", "knockedDown"],
+    straightPunch:{
+      animation: "straightPunch",
+      nextStates: ["attacking", "standing", "hit", "stunned", "knockedDown"]
+    },
+    straightPunch:{
+      animation: "straightPunch",
+      nextStates: ["attacking", "standing", "hit", "stunned", "knockedDown"]
+    },
     throw: ["standing"],
     thrown: ["stunned", "knockedDown"],
     stunned: ["standing", "hit", "knockedDown", "stunned"],
@@ -82,7 +116,7 @@ on keypress:
 var currentState = ''
   var newState = getMoveForKey(keypress) // Key press action
 
-  var nextStates = knightStates[player.currentState] // Potential next states, based on current state
+  var nextStates = mediFighter[player.currentState] // Potential next states, based on current state
 
   if nextStates.includes(newState) // Check if the state is allowed
     do it!

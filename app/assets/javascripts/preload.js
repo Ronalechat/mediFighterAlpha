@@ -13,7 +13,7 @@ mediFighter.Preload.prototype = {
     this.load.spritesheet('ryu', 'assets/RyuSFA3.gif', 78, 110, 24);
     this.load.spritesheet('stage', 'assets/villageOfTwilight.gif', 800, 336);
     this.load.atlas("ryuIntro", 'assets/RyuSFA3.gif', 'assets/ryu.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
-    this.load.atlasJSONArray("ryuReady", 'assets/RyuSFA3.gif', "", mediFighter.stateAnimation.highHit);
+    this.load.atlasJSONArray("ryuAnims", 'assets/RyuSFA3.gif', "", mediFighter.stateAnimation);
     // this.load.atlasJSONArray("ryuIdle", 'assets/RyuSFA3.gif', "", mediFighter.stateAnimation.idle);
     this.load.onLoadComplete.add(this.loadComplete, this);
   },
