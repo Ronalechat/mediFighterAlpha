@@ -34,7 +34,7 @@ mediFighter.Preload.prototype = {
 
   },
   loadStart: function () {
-    text.text= "Loading..."
+    text.text = "Loading..."
   },
 
   fileComplete: function(progress, success) {

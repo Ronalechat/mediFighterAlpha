@@ -1,2 +1,31 @@
-<h1>Users#edit</h1>
-<p>Find me in app/views/users/edit.html.erb</p>
+<h1>Edit <%= @user.name %>'s profile</h1>
+
+
+<% if @user.errors.any? %>
+<ol>
+  <% @user.errors.full_messages.each do |msg| %>
+  <li><%= msg %></li>
+  <% end %>
+</ol>
+<% end %>
+
+<%= form_for(@user, :html => {:multipart => true}) do |f| %>
+<p>
+<%= f.label :username %>
+<%= f.text_field :username, :required => true %>
+</p>
+<p>
+<%= f.label :email, "Email:" %>
+<%= f.email_field :email, :required => true %>
+</p>
+<p>
+  <%= f.label :password, "Password:" %>
+  <%= f.password_field :password %>
+</p>
+<p>
+  <%= f.label :password_confirmation, "Confirm password:" %>
+  <%= f.password_field :password_confirmation %>
+</p>
+<%= f.submit %>
+
+<% end %>

@@ -17,5 +17,6 @@
 //= require animationsJSON.js
 //= require preload.js
 //= require mainmenu.js
+//= require levelTest.js
 //= require init.js
 //= require_tree .

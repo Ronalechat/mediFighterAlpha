@@ -24,7 +24,8 @@ mediFighter.gameStates = {
     },
     crouching:{
       animation: 'crouching',
-      nextStates:["standing", "stunned", "knockedDown", "crouchBlocking", "blockHit", "hit", "attacking"]
+      nextStates:["standing", "stunned", "knockedDown", "crouchBlocking", "blockHit", "hit", "attacking"],
+      canBeCancelledBy: [ "hit", ]
     },
     standBlocking:{
       animation: "block",
@@ -33,7 +34,7 @@ mediFighter.gameStates = {
     crouchBlocking: ["blockHit", "stunned", "knockedDown"],
     jumping: {
       animation: 'vertJump',
-      nextStates:["attacking", "knockedDown"]
+      nextStates:["attacking", "standing", "knockedDown"]
     },
     forwardJump: ["attacking", "knockedDown"],
     backwardJump: ["attacking", "knockedDown"],
