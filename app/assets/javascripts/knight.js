@@ -12,14 +12,14 @@ mediFighter.gameStates = {
       update: function() {
 
       },
-      nextStates: ["moveForward", "moveBackward", "crouching", "standBlocking", "jumping", "forwardJump", "backwardJump", "hit", "attacking", "stunned", "throw", "knockedDown", "thrown"]
+      nextStates: ["moveRight", "moveLeft", "crouching", "standBlocking", "jumping", "forwardJump", "backwardJump", "hit", "attacking", "stunned", "throw", "knockedDown", "thrown"]
     },
-    moveForward:{
-      animation: "moveForward",
+    moveRight:{
+      animation: "moveRight",
       nextStates: ["attacking", "idle", "crouching", "standBlocking", "forwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"]
     },
-    moveBackward: {
-      animation: "moveBackward",
+    moveLeft: {
+      animation: "moveLeft",
       nextStates: ["attacking", "idle", "crouching", "standBlocking", "backwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"]
     },
     crouching:{
@@ -62,8 +62,8 @@ mediFighter.gameStates = {
 /*
 states:
 idle
-movingForward
-movingBackward
+movingRight
+movingLeft
 crouching
 standBlocking
 crouchBlocking

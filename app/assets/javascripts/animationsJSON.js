@@ -359,8 +359,8 @@ mediFighter.stateAnimation = {
     {
       "filename":"sprite40",
       "frame":{"x":89,"y":603,"w":62,"h":65},
-      "rotated":false,"trimmed":false,
-      "spriteSourceSize":{"x":0,"y":0,"w":62,"h":65},
+      "rotated":false,"trimmed":true,
+      "spriteSourceSize":{"x":0,"y":29,"w":62,"h":65},
       "sourceSize":{"w":62,"h":65}
     },
     //1 frame

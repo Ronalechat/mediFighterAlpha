@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resources :sessions, only: [:new, :create, :destroy]
 
-  root :to => 'pages#index'
+
 
   resources :users
   get '/login' => 'session#new'
@@ -9,5 +9,6 @@ Rails.application.routes.draw do
   delete '/login' => 'session#destroy'
 
 
+  root :to => 'welcome#index'
   mount ActionCable.server => '/cable'
 end
