@@ -7,7 +7,7 @@ var mediFighter = mediFighter || {}
 
 mediFighter.gameStates = {
     // Movement, defence, combat, and other attack move states
-    standing: {
+    idle: {
       animation: 'idle',
       update: function() {
 
@@ -16,15 +16,15 @@ mediFighter.gameStates = {
     },
     moveForward:{
       animation: "moveForward",
-      nextStates: ["attacking", "standing", "crouching", "standBlocking", "forwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"]
+      nextStates: ["attacking", "idle", "crouching", "standBlocking", "forwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"]
     },
     moveBackward: {
       animation: "moveBackward",
-      nextStates: ["attacking", "standing", "crouching", "standBlocking", "backwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"]
+      nextStates: ["attacking", "idle", "crouching", "standBlocking", "backwardJump", "hit", "stunned", "knockedDown", "throw", "thrown"]
     },
     crouching:{
       animation: 'crouching',
-      nextStates:["standing", "stunned", "knockedDown", "crouchBlocking", "blockHit", "hit", "attacking"],
+      nextStates:["idle", "stunned", "knockedDown", "crouchBlocking", "blockHit", "hit", "attacking"],
       canBeCancelledBy: [ "hit", ]
     },
     standBlocking:{
@@ -34,25 +34,25 @@ mediFighter.gameStates = {
     crouchBlocking: ["blockHit", "stunned", "knockedDown"],
     jumping: {
       animation: 'vertJump',
-      nextStates:["attacking", "standing", "knockedDown"]
+      nextStates:["attacking", "idle", "knockedDown"]
     },
     forwardJump: ["attacking", "knockedDown"],
     backwardJump: ["attacking", "knockedDown"],
-    hit: ["standing", "thrown", "stunned", "knockedDown"],
+    hit: ["idle", "thrown", "stunned", "knockedDown"],
     blockHit: ["blocking"],
-    attacking:["attacking", "standing", "hit", "stunned", "knockedDown"],
+    attacking:["attacking", "idle", "hit", "stunned", "knockedDown"],
     straightPunch:{
       animation: "straightPunch",
-      nextStates: ["attacking", "standing", "hit", "stunned", "knockedDown"]
+      nextStates: ["attacking", "idle", "hit", "stunned", "knockedDown"]
     },
     straightPunch:{
       animation: "straightPunch",
-      nextStates: ["attacking", "standing", "hit", "stunned", "knockedDown"]
+      nextStates: ["attacking", "idle", "hit", "stunned", "knockedDown"]
     },
-    throw: ["standing"],
+    throw: ["idle"],
     thrown: ["stunned", "knockedDown"],
-    stunned: ["standing", "hit", "knockedDown", "stunned"],
-    knockedDown: ["standing"]
+    stunned: ["idle", "hit", "knockedDown", "stunned"],
+    knockedDown: ["idle"]
 
     //Environmental states:
     // Entrenched (Effect only lasts while in mud)
@@ -61,7 +61,7 @@ mediFighter.gameStates = {
 
 /*
 states:
-standing
+idle
 movingForward
 movingBackward
 crouching
@@ -82,7 +82,7 @@ thrown (as in being currently thrown by the other player)
 var createplayer = function(username, selectedCharacter){
   return {
     userName: username,
-    currentState: 'standing',
+    currentState: 'idle',
     sprite:  this.game.add.sprite(250, 400, selectedCharacter), // or similar
     startLeft: true
   };

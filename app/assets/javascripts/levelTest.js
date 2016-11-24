@@ -15,6 +15,7 @@ var milliseconds = 0;
 var seconds = 0;
 var minutes = 0;
 var players = {};
+var canHorizontalMove = true;
 var inputArray = [];
 
 this.style2 = { font: '10px Alegreya Sans SC', fill: '#ffffff', };
@@ -23,7 +24,7 @@ this.style2 = { font: '10px Alegreya Sans SC', fill: '#ffffff', };
 mediFighter.LevelTest.prototype = {
 
   player: {
-    currentState: 'standing',
+    currentState: 'idle',
     health: 1000
   },
 
@@ -93,8 +94,8 @@ mediFighter.LevelTest.prototype = {
     ryu.animations.add('ready', [0,1,2,3,4,5,6,7,8,9,10], 6, true);
 
     //movement
-    ryu.animations.add('moveForward', [18,19,20, 21, 22, 23, 24], 6, true);
-    ryu.animations.add('moveBackward', [24, 25, 26, 27, 28, 29, 30], 6, true);
+    ryu.animations.add('moveForward', [19,20, 21, 22, 23, 24], 6, true);
+    ryu.animations.add('moveBackward', [ 25, 26, 27, 28, 29, 30], 6, true);
     ryu.animations.add('vertJump', [31, 32, 33, 34, 35, 36, 37], 10, false);
     ryu.animations.add('vertJumpFall', [37], 1, true);
     ryu.animations.add('forwardJump', [40, 41, 42, 43, 44, 45, 46, 47], 6, false);
@@ -136,7 +137,7 @@ mediFighter.LevelTest.prototype = {
     ryu.animations.add('throw', [ 144, 145, 146, 147], 6, true);
     ryu.animations.add('longThrow', [ 148, 149, 150], 6, true);
     //Other animation
-    ryu.animations.add('downToStanding', [ 151, 152], 6, true);
+    ryu.animations.add('downToIdle', [ 151, 152], 6, true);
     ryu.animations.add('hitLight', [ 153], 6, true);
     ryu.animations.add('hitHeavy', [ 154, 155 ], 6, true);
     ryu.animations.add('falling', [ 157 ], 6, true);
@@ -206,7 +207,7 @@ mediFighter.LevelTest.prototype = {
     }.bind(this));
 
     cursors.right.onUp.add(function(){
-      this.keyHandler("standing");
+      this.keyHandler("idle");
       // console.log('Standing');
     }.bind(this));
 
@@ -217,7 +218,7 @@ mediFighter.LevelTest.prototype = {
 
 
     cursors.left.onUp.add(function(){
-      this.keyHandler("standing");
+      this.keyHandler("idle");
       // console.log('Standing');
     }.bind(this));
 
@@ -266,6 +267,18 @@ mediFighter.LevelTest.prototype = {
   }, ////////////// End of Create
 
   update: function () {
+
+    if (canHorizontalMove === true && cursors.right.isDown) {
+      this.player.sprite.body.velocity.x = 90;
+      ryu.animations.play('moveForward', 8, true, false)
+    } else if (canHorizontalMove === true && cursors.left.isDown) {
+      this.player.sprite.body.velocity.x = -90;
+      ryu.animations.play('moveBackward', 8, true, false)
+    } else  if (canHorizontalMove === true ){
+      this.player.sprite.body.velocity.x = 0;
+      ryu.animations.play('idle', 6, true, false)
+   }
+
 
     this.floorCheck()
     this.inputArrayGarbageCollection(inputArray);
@@ -369,34 +382,34 @@ mediFighter.LevelTest.prototype = {
 
     changePlayerState: function(player, state) {
 
-      player.sprite.animations.play(mediFighter.gameStates[state].animation, 6, true, false);
-
-
-      switch(state){
-        case 'moveForward':
-          player.sprite.body.velocity.x = 80;
-          player.sprite.scale.x = 1;
-        break;
-        case 'standing':
-          player.sprite.body.velocity.x = 0;
-          player.sprite.offsetY = 29;
-          player.sprite.body.setSize(66, 95, 0, 0)
-        break;
-        case 'crouching':
-          player.sprite.body.velocity.x = 0;
-          player.sprite.offsetY = 29;
-          player.sprite.body.setSize(62, 65, 0, 29)
-          //Ignore move commands?
-        break;
-        case 'moveBackward':
-          player.sprite.body.velocity.x = -80;
-          player.sprite.scale.x = -1;
-
-        break;
-        case 'jumping':
-          player.sprite.body.velocity.y = -200;
-        break;
-      }
+      // player.sprite.animations.play(mediFighter.gameStates[state].animation, 6, true, false);
+      //
+      //
+      // switch(state){
+      //   case 'moveForward':
+      //     player.sprite.body.velocity.x = 80;
+      //     player.sprite.scale.x = 1;
+      //   break;
+      //   case 'idle':
+      //     player.sprite.body.velocity.x = 0;
+      //     player.sprite.offsetY = 29;
+      //     player.sprite.body.setSize(66, 95, 0, 0)
+      //   break;
+      //   case 'crouching':
+      //     player.sprite.body.velocity.x = 0;
+      //     player.sprite.offsetY = 29;
+      //     player.sprite.body.setSize(62, 65, 0, 29)
+      //     //Ignore move commands?
+      //   break;
+      //   case 'moveBackward':
+      //     player.sprite.body.velocity.x = -80;
+      //     player.sprite.scale.x = -1;
+      //
+      //   break;
+      //   case 'jumping':
+      //     player.sprite.body.velocity.y = -200;
+      //   break;
+      // }
     },
 
     inputDetect: function(keyPressValue) {
@@ -536,8 +549,9 @@ mediFighter.LevelTest.prototype = {
   floorCheck: function() {
     if (this.player.sprite.y > 351) {
       console.log(this.player.sprite.y);
-      currentState = "standing"
+      currentState = "idle"
       ryu.animations.play('idle', 6, true, false)
+      canHorizontalMove = true;
 
 
     }
@@ -626,35 +640,47 @@ mediFighter.LevelTest.prototype = {
         return false;
         break
       case "idle":
-      //TODO Check for horizontal movement. if right, x= + ---- if left x = -
-        for (var i = 0; i < inputArray.length-1; i++) {
-          var first = inputArray[i].key
-          var second = inputArray[i+1].key
+        //TODO Check for horizontal movement. if right, x= + ---- if left x = -
+          for (var i = 0; i < inputArray.length-1; i++) {
+            var first = inputArray[i].key
+            var second = inputArray[i+1].key
 
-          var timeDifference = inputArray[i+1].ts - inputArray[i].ts
-          if (timeDifference < 300) {
-            if (first + second === "upright" || first + second === "rightup") {
-              console.log("upright");
-              // player.sprite.body.velocity.y = - 2000
-            } else if (first + second === "upleft" || first + second === "leftup") {
-              console.log("upleft");
+
+
+            var timeDifference = inputArray[i+1].ts - inputArray[i].ts
+            // if (inputArray[i].key === 'right') {
+            //   this.player.sprite.body.velocity.x = 80;
+            //
+            // } else if ( inputArray[i].key === 'left') {
+            //   this.player.sprite.body.velocity.x = - 80;
+            // } else {
+            //     this.player.sprite.body.velocity.x = 0;
+            // }
+            if (timeDifference < 90) {
+              if (first + second === "upright" || first + second === "rightup") {
+                console.log("upright");
+                // player.sprite.body.velocity.y = - 2000
+              } else if (first + second === "upleft" || first + second === "leftup") {
+                console.log("upleft");
+              }
+            } else if (first === 'up') {
+              //vertJump
+              currentState = 'jumping'
+              ryu.animations.play('vertJump', 6, false, false)
+              this.player.sprite.body.velocity.y = -200;
+              canHorizontalMove = false
+              ryu.events.onAnimationComplete.add(function(){
+                ryu.animations.play('vertJumpFall', 1, false, false)
+                currentState = 'jumpFall'
+              }, this);
+
             }
-          } else if (first === 'up') {
-            //vertJump
-            currentState = 'jumping'
-            ryu.animations.play('vertJump', 6, false, false)
-            ryu.events.onAnimationComplete.add(function(){
-              ryu.animations.play('vertJumpFall', 1, false, false)
-              currentState = 'jumpFall'
-            }, this);
-            this.player.sprite.body.velocity.y = -200;
-          } else if (first === 'right') {
-            this.player.sprite.body.velocity.x = + 80;
-          } else if (first === 'left') {
-            this.player.sprite.body.velocity.x = - 80;
-          }
-        }
+
+
+
+
     }
+  }
 
 
     // if standing

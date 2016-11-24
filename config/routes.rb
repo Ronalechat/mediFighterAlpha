@@ -9,5 +9,5 @@ Rails.application.routes.draw do
   delete '/login' => 'session#destroy'
 
 
-  # mount ActionCable.server => '/cable'
+  mount ActionCable.server => '/cable'
 end
