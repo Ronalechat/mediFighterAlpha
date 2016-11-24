@@ -70,20 +70,7 @@ mediFighter.LevelTest.prototype = {
     // this.player.sprite.anchor.setTo(0.5, 1);
 
 
-    // //Hitboxes
-    // hitboxes = game.add.group()
-    // hitboxes.enableBody = true;
-    // this.player.sprite.addChild(hitboxes)
-    //
-    // var hitbox1 = hitboxes.create(0,0, null)// set size and position of hitbox relative to the player.
-    // hitbox1.body.setSize(50, 50, this.player.width, this.player.height / 2); // add properties to the hitbox
-    // hitbox1.name = "punch";
-    // hitbox1.damage = 50;
 
-
-    // hitbox1.knockbackDirection = 0.5;
-    // hitbox1.knockbackAmt = 600;
-    // enableHitbox(hitbox1)
 
 
     // this.physics.arcade.enable(ryu);
@@ -98,6 +85,7 @@ mediFighter.LevelTest.prototype = {
 
     var initPlayer = function (x, y) {
 
+      hitboxes = this.game.add.group()
       ryu = this.add.sprite(x, y, 'ryuAnims');
 
       ryu.anchor.setTo(0.5, 1);
@@ -164,6 +152,9 @@ mediFighter.LevelTest.prototype = {
           // this.player.sprite.addChild(hitboxes)
 
 
+
+
+
       this.game.physics.enable( ryu, Phaser.Physics.ARCADE)
       ryu.body.collideWorldBounds = true;
 
@@ -172,6 +163,9 @@ mediFighter.LevelTest.prototype = {
       this.physics.arcade.enable(ryu, [this.player, this.playerOther], Phaser.Physics.ARCADE)
       ryu.body.enable = true;
       return ryu;
+      hitboxes.add(ryu);
+      attackBox = hitboxes.create(20, 10, "attackBox")
+      attackBox.anchor.setTo(.15, .5)
 
     }.bind(this); // use game 'this'
 
@@ -211,11 +205,9 @@ mediFighter.LevelTest.prototype = {
         var playersID = [p.name, pOther.name].sort().join('');
         // don't set up physics between player and itself
         if(p.name === pOther.name || physicsSetup.indexOf(playersID) !== -1 ) {
-          console.log('SKIP Setting up physics between %s and %s', p.name, pOther.name);
           continue;
         }
 
-        console.log('Setting up physics between %s and %s', p.name, pOther.name);
         physicsSetup.push( playersID ); // save into our record of player-players setups already done
 
         // setup collions and hitboxes and other physics between p and pOther
@@ -227,6 +219,23 @@ mediFighter.LevelTest.prototype = {
       }
 
     }
+
+      // this.player = game.add.group(this, null, "hitboxes")
+      //Hitboxes
+      // hitboxes = this.game.add.group()
+      // hitboxes.enableBody = true;
+      // ryu.addChild(hitboxes)
+      //
+      // var hitbox1 = hitboxes.create(this.player.sprite.centerX, this.player.sprite.centerY, "attackBox")// set size and position of hitbox relative to the player.
+      // hitbox1.body.setSize(50, 50, this.player.width, this.player.height / 2); // add properties to the hitbox
+      // hitbox1.name = "punch";
+      // hitbox1.damage = 50;
+
+
+      // hitbox1.knockbackDirection = 0.5;
+      // hitbox1.knockbackAmt = 600;
+      // enableHitbox(hitbox1)
+
 
 
 
@@ -327,7 +336,6 @@ mediFighter.LevelTest.prototype = {
 
 
     cursors.down.onDown.add(function(){
-      // console.log(this);
       // this.keyHandler("crouching");
       this.inputDetect("down");
     }.bind(this));
@@ -335,36 +343,29 @@ mediFighter.LevelTest.prototype = {
 
     cursors.down.onUp.add(function(e){
       this.inputDetect("idle");
-      // console.log('Standing');
       // if( this.input.keyboard.downDuration(a, 2000) ) {
-      //   console.log('%cUP WAS PRESSED!!!', 'font-size: 20pt');
       // }
     }.bind(this));
 
     cursors.right.onDown.add(function(){
-      // console.log(this);
       // this.keyHandler("moveRight");
       this.inputDetect("right")
     }.bind(this));
 
     // cursors.right.onUp.add(function(){
     //   this.keyHandler("idle");
-    //   // console.log('Standing');
     // }.bind(this));
 
     cursors.left.onDown.add(function(){
-      // console.log(this);
       this.inputDetect("left");
     }.bind(this));
 
 
     // cursors.left.onUp.add(function(){
     //   this.keyHandler("idle");
-    //   // console.log('Standing');
     // }.bind(this));
 
     cursors.up.onDown.add(function(){
-      // console.log(this);
       this.inputDetect('up')
     }.bind(this));
 
@@ -397,7 +398,6 @@ mediFighter.LevelTest.prototype = {
 
     this.priorityCheck(this.player.currentState, inputArray);
 
-    console.log(inputArray);
 
     if (canHorizontalMove === true && cursors.right.isDown) {
       // currentState = "moveRight"
@@ -422,7 +422,7 @@ mediFighter.LevelTest.prototype = {
     } else if (this.player.currentState == "crouching" && cursors.down.isUp) {
       canHorizontalMove = true
      this.player.sprite.animations.play('idle', 8, true, false)
-     this.player.currentState = "idle"
+    //  this.player.currentState = "idle"
     }
 
     if ( this.player.sprite.body.velocity.y < 0 ) {
@@ -440,7 +440,6 @@ mediFighter.LevelTest.prototype = {
       this.player.sprite.scale.x = -1;
       this.playerOther.sprite.scale.x = 1;
     }
-    // console.log(this.player.sprite.x + " ||||| " + this.playerOther.sprite.x);
 
 
 
@@ -614,12 +613,6 @@ mediFighter.LevelTest.prototype = {
 
   }, ////////////// End of Render
 
-  // updateStateText: function () {
-  //   // console.log('in updateStateText()');
-  //   stateText.text = this.player.currentState;
-  // },
-
-
   keyHandler: function(newState) {
 
     // newState is the state which this key wants to transition to;
@@ -627,9 +620,6 @@ mediFighter.LevelTest.prototype = {
 
     var transitionStates = mediFighter.gameStates[this.player.currentState].nextStates;
      // Potential next states, based on current state
-
-    //  console.log('gameStates[%s].nextStates ', this.player.currentState);
-    //  console.log(transitionStates.toString());
 
 
       if(transitionStates.includes(newState)) {
@@ -680,7 +670,6 @@ mediFighter.LevelTest.prototype = {
       timeOfPress = Date.now();
       pressedKeysObject = { key: keyPressValue, ts: timeOfPress };
       inputArray.push(pressedKeysObject)
-      console.log(keyPressValue);
     },
 
     priorityCheck: function(currentState, inputArray) {
@@ -736,7 +725,6 @@ mediFighter.LevelTest.prototype = {
 
 
 
-      // console.log('key event:', keyPressValue);
 
       // keyPressValue
       // timeOfInput =
@@ -890,7 +878,6 @@ mediFighter.LevelTest.prototype = {
               }, this);
           //TODO: DO A P+P+K
         } else if (first + second + third === "punchkickpunch") {
-          console.log("DRAGONKICK");
           return true;
         } else {
           return false;
@@ -950,12 +937,11 @@ mediFighter.LevelTest.prototype = {
         break
       case "idle":
           for (var i = 0; i < inputArray.length-1; i++) {
-            var zeroeth = inputArray[0].key
             var first = inputArray[i].key
             var second = inputArray[i+1].key
 
             var timeDifference = inputArray[i+1].ts - inputArray[i].ts
-            if ( zeroeth === 'punch') {
+            if ( first === 'punch') {
 
               this.player.currentState = 'attacking'
               this.player.sprite.animations.play('straightPunch', 10, false, false)
@@ -965,7 +951,6 @@ mediFighter.LevelTest.prototype = {
                 this.player.sprite.animations.play('idle', 8, true, false)
                 this.player.currentState = 'idle'
                 canHorizontalMove = true
-                console.log("inside logging state "+this.player.currentState);
               }, this);
 
             }
