@@ -8,6 +8,8 @@ var currentState = '';
 var nextStates;
 var ryu;
 var hitboxes
+var punchbox
+var kickbox
 var stateText;
 var canAttack = true;
 var timer;
@@ -18,6 +20,7 @@ var minutes = 0;
 var canHorizontalMove = true;
 var canOtherHorizontalMove = true;
 var inputArray = [];
+var myText
 
 
 
@@ -43,6 +46,12 @@ mediFighter.LevelTest.prototype = {
     this.game.scale.pageAlignHorizontally = true;
     this.game.scale.pageAlignVertically = true;
     this.game.scale.refresh();
+
+
+    //Full Sreen [        ]
+    // Maintain aspect ratio
+    this.game.scale.fullScreenScaleMode = Phaser.ScaleManager.SHOW_ALL;
+
 
     //Physics //////////////////////////////////////////////////
     this.physics.startSystem(Phaser.Physics.ARCADE);
@@ -85,7 +94,6 @@ mediFighter.LevelTest.prototype = {
 
     var initPlayer = function (x, y) {
 
-      hitboxes = this.game.add.group()
       ryu = this.add.sprite(x, y, 'ryuAnims');
 
       ryu.anchor.setTo(0.5, 1);
@@ -120,13 +128,13 @@ mediFighter.LevelTest.prototype = {
       ryu.animations.add('straightPunch', [50, 51, 50], 6, true);
       ryu.animations.add('heavyPunch', [52, 53, 54, 55], 6, true);
       ryu.animations.add('roundPunch', [56, 57, 58, 59, 60], 6, true);
-      ryu.animations.add('lowKick', [60, 61, 62, 63, 64, 65, 66], 6, true);
+      ryu.animations.add('lowKick', [61, 62, 63, 64, 65], 12, true);
       ryu.animations.add('highKick', [ 66, 67, 68], 6, true);
       ryu.animations.add('roundKick', [ 69, 70, 71, 72, 73, 74], 6, true);
       ryu.animations.add('topKick', [ 94, 95, 96, 97, 98, 99, 100], 6, true);
 
       //Special attack
-      ryu.animations.add('diveKick', [ 75, 76, 77], 6, true);
+      ryu.animations.add('diveKick', [ 75, 76, 77], 12, false);
       ryu.animations.add('divePunch', [ 80, 81, 82, 82], 12, true);
       ryu.animations.add('hadouken', [ 101, 102, 103, 104, 105], 6, true);
       ryu.animations.add('bigHadouken', [ 106, 107, 108, 109, 110, 111, 112, 113, 114, 115], 6, true);
@@ -142,8 +150,8 @@ mediFighter.LevelTest.prototype = {
       ryu.animations.add('hitHeavy', [ 154, 155 ], 6, true);
       ryu.animations.add('falling', [ 157 ], 6, true);
       ryu.animations.add('down', [ 158 ], 6, true);
-      ryu.animations.add('bigHit', [ 159, 160 ], 6, true);
-      ryu.animations.add('ded', [ 161,162, 163, 164, 165, 166, 167, 168, 169, 170 ], 6, true);
+      ryu.animations.add('bigHit', [ 159, 160 ], 6, false);
+      ryu.animations.add('ded', [ 161,162, 163, 164, 165, 166, 167, 168, 169, 170 ], 12, false);
       ryu.animations.add('victory', [ 171, 172, 173, 174, 175, 176, 177, 178, 179, 180 ], 6, true);
       ryu.animations.add('victoryIdle', [ 179, 178, 180, 179, 180, 179, 178, 177, 178 ], 6, true);
 
@@ -157,18 +165,47 @@ mediFighter.LevelTest.prototype = {
 
       this.game.physics.enable( ryu, Phaser.Physics.ARCADE)
       ryu.body.collideWorldBounds = true;
-
+      ryu.hitArea = true;
 
       ryu.animations.play('idle', 8, true, false);
       this.physics.arcade.enable(ryu, [this.player, this.playerOther], Phaser.Physics.ARCADE)
       ryu.body.enable = true;
+
+      // hitboxes.add(ryu);
+      hitboxes = this.game.add.group(ryu)
+      hitboxes.enableBody = true;
+      punchbox = hitboxes.create(35, -70, null)
+      punchbox.anchor.setTo(0.65, 0.5);
+      punchbox.body.setSize(40, 40/*, ryu.width, ryu.height/2*/)
+      punchbox.body.allowGravity = false;
+
+      kickbox = hitboxes.create(35, -30, null);
+      kickbox.anchor.setTo(.65, 0.5);
+      kickbox.body.setSize(40, 40);
+      kickbox.body.allowGravity = false;
+
+
+
+
+
+      // var kickBox = hitboxes.create(32, -35, null, [63]);
+      // var hitbox1 = hitboxes.create(32, -90, null);
+      // hitbox1.body.setSize(50, 50, ryu.width, ryu.height / 2);
+
+      // hitbox1.name = "punchBox";
+      // hitbox1.damage = 50;
+
+
+      // hitbox2 = game.add.graphics(0,0); // create graphic
+      // hitbox2.beginFill(0x00FFFF, 1); // paint graphic a colour
+      // hitbox2.boundsPadding = 0;
+      // hitbox2.drawRect(ryu.x, ryu.y, 100, 100); // draw graphic to screen
+      // hitbox2.drawRect(ryu.centerX+33, ryu.centerY-50, 20, 100)
+      // ryu.addChild(hitbox2)
+
       return ryu;
-      hitboxes.add(ryu);
-      attackBox = hitboxes.create(20, 10, "attackBox")
-      attackBox.anchor.setTo(.15, .5)
 
     }.bind(this); // use game 'this'
-
     var p1 = {
       name: 'player1',
       sprite: initPlayer(300, 336)
@@ -219,6 +256,31 @@ mediFighter.LevelTest.prototype = {
       }
 
     }
+
+
+
+      // attackBox = game.add.graphics(0,0);
+      // attackBox.beginFill(0x000000, 1);
+      // attackBox.drawRect(this.player.sprite.centerX, this.player.sprite.centerY, 20, 100)
+      // hitboxes.add(attackBox)
+      // attackBox.anchor.setTo(0.1, .1)
+      // attackBox.drawRect(this.player.sprite.centerX+33, this.player.sprite.centerY-50, 20, 100)
+
+      // attackBox = hitboxes.create(20, 10, "attackBox")
+
+
+
+      // myGroup = game.add.group(); // create a group
+      // myGraphic = game.add.graphics(0,0); // create graphic
+      // myGraphic.beginFill(0x00FFFF, 1); // paint graphic a colour
+      // myGraphic.boundsPadding = 0;
+      // myGraphic.drawRect(0, 0, 100, 100); // draw graphic to screen
+      // myGroup.add(myGraphic); // add graphic to group
+      // myText = game.add.text(this.player.sprite.centerX, this.player.sprite.centerY,"text",{font:"bold 12px Arial",fill:"#000"}); // create text
+      // myGroup.add(myText); // add text to group
+      // myGroup.visible = false; // hide myGraphic AND myText
+      // myGroup.visible = true; // show myGraphic AND myText
+      // myGroup.add(ryu); // add graphic to group
 
       // this.player = game.add.group(this, null, "hitboxes")
       //Hitboxes
@@ -332,6 +394,7 @@ mediFighter.LevelTest.prototype = {
     w = this.input.keyboard.addKey(Phaser.Keyboard.W);
     a = this.input.keyboard.addKey(Phaser.Keyboard.A);
     s = this.input.keyboard.addKey(Phaser.Keyboard.S);
+    u = this.input.keyboard.addKey(Phaser.Keyboard.U);
 
 
 
@@ -395,6 +458,9 @@ mediFighter.LevelTest.prototype = {
   }, ////////////// End of Create
 
   update: function () {
+    // if (u.onDown){
+    //   this.goFull()
+    // }
 
     this.priorityCheck(this.player.currentState, inputArray);
 
@@ -410,7 +476,7 @@ mediFighter.LevelTest.prototype = {
     } else  if (canHorizontalMove === true ){
       this.player.currentState = 'idle'
       this.player.sprite.body.velocity.x = 0;
-      this.player.sprite.animations.play('idle', 8, true, false)
+      this.player.sprite.animations.play('idle', 8, false, false)
    }
 
    if (this.player.currentState == "idle" && cursors.down.isDown) {
@@ -418,11 +484,13 @@ mediFighter.LevelTest.prototype = {
       this.player.sprite.animations.play('crouch', 1, true, false)
       this.player.currentState = "crouching"
       this.player.sprite.body.velocity.x = 0;
-      App.game.sendMove({'move': 'crouching'});
+      this.player.sprite.body.setSize(62, 65, 0, 29)
+      // App.game.sendMove({'move': 'crouching'});
     } else if (this.player.currentState == "crouching" && cursors.down.isUp) {
       canHorizontalMove = true
+      this.player.currentState == "idle"
      this.player.sprite.animations.play('idle', 8, true, false)
-    //  this.player.currentState = "idle"
+     this.player.sprite.body.setSize(62, 99, 0, 0)
     }
 
     if ( this.player.sprite.body.velocity.y < 0 ) {
@@ -433,6 +501,10 @@ mediFighter.LevelTest.prototype = {
       this.player.currentState;
     }
 
+
+
+
+    //Players will always face each other.
     if (this.player.sprite.x < this.playerOther.sprite.x ) {
       this.player.sprite.scale.x = 1;
       this.playerOther.sprite.scale.x = -1;
@@ -455,27 +527,31 @@ mediFighter.LevelTest.prototype = {
       {
           this.playerOther.sprite.body.velocity.x = 90
           this.playerOther.sprite.animations.play('moveLeft', 12, true, false)
-      } else {
+      } else if (canOtherHorizontalMove === true) {
         this.playerOther.sprite.body.velocity.x = 0
         // this.playerOther.sprite.events.onAnimationComplete.add(function(){
-        //     this.playerOther.sprite.animations.play('idle', 12, true, false)
+            this.playerOther.sprite.animations.play('idle', 12, true, false)
         //}, this);
-        this.playerOther.sprite.animations.play('idle', 12, true, false)
+        //  this.playerOther.sprite.animations.play('idle', 12, true, false)
+         //Banana
       }
     }
 
-    if (pad1.isDown(Phaser.Gamepad.XBOX360_DPAD_UP) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) < -0.1)
-    {
-      canOtherHorizontalMove = false;
-      this.playerOther.sprite.body.velocity.y = -500
-      this.playerOther.currentState = "jumping"
-      this.playerOther.sprite.animations.play('vertJump', 12, false, false)
-      this.playerOther.sprite.events.onAnimationComplete.add(function(){
-        this.playerOther.currentState = "jumpFall"
-        this.playerOther.sprite.animations.play('vertJumpFall', 1, true, false)
-      }, this);
+    if (this.playerOther.currentState !== "jumping" || this.playerOther.currentState !== "jumpFall" ) {
+      if (pad1.isDown(Phaser.Gamepad.XBOX360_DPAD_UP) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) < -0.1)
+      {
+        canOtherHorizontalMove = false;
+        this.playerOther.sprite.body.velocity.y = -500
+        this.playerOther.currentState = "jumping"
+        this.playerOther.sprite.animations.play('vertJump', 10, false, false)
 
-      // this.playerOther.sprite.animations.play('straightPunch', 10, false, false)
+        this.playerOther.sprite.events.onAnimationComplete.add(function(){
+          this.playerOther.currentState = "jumpFall"
+          this.playerOther.sprite.animations.play('vertJumpFall', 1, true, false)
+        }, this);
+
+        // this.playerOther.sprite.animations.play('straightPunch', 10, false, false)
+      }
     }
 
     if (pad1.isDown(Phaser.Gamepad.XBOX360_DPAD_DOWN) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > 0.1)
@@ -483,10 +559,12 @@ mediFighter.LevelTest.prototype = {
       this.playerOther.sprite.animations.play('crouch', 1, true, false)
       this.playerOther.sprite.body.velocity.x = 0
       canOtherHorizontalMove = false;
+      this.playerOther.sprite.body.setSize(62, 65, 0, 29)
 
         // sprite.y++;
-    } else if (pad1.justReleased(Phaser.Gamepad.XBOX360_DPAD_DOWN)) {
+    } else if (pad1.justReleased(Phaser.Gamepad.XBOX360_DPAD_DOWN) || pad1.axis(Phaser.Gamepad.XBOX360_STICK_LEFT_Y) > 0.1) {
       this.playerOther.sprite.animations.play('idle', 12, true, false)
+      this.playerOther.sprite.body.setSize(62, 99, 0, 0)
       canOtherHorizontalMove = true;
     }
 
@@ -500,7 +578,7 @@ mediFighter.LevelTest.prototype = {
       }, this);
     }
 
-    if (pad1.justReleased(Phaser.Gamepad.XBOX360_B))
+    if (pad1.justPressed(Phaser.Gamepad.XBOX360_B))
     {
       canOtherHorizontalMove = false
       this.playerOther.sprite.animations.play('topKick', 12, false, false);
@@ -519,7 +597,7 @@ mediFighter.LevelTest.prototype = {
       }, this);
     }
 
-    if (pad1.justReleased(Phaser.Gamepad.XBOX360_Y))
+    if (pad1.justPressed(Phaser.Gamepad.XBOX360_Y))
     {
       canOtherHorizontalMove = false;
       this.playerOther.sprite.animations.play('roundPunch', 12, false, false)
@@ -545,28 +623,56 @@ mediFighter.LevelTest.prototype = {
     //     }
     // }
 
-
-
-
-
-
-
-
-
-
-
     this.floorCheck()
     this.inputArrayGarbageCollection(inputArray);
 
-    // this.updateTimer();
-
-
-
-    // this.updateStateText();
-
     //collision detection:
-    this.physics.arcade.collide(this.player.sprite, this.playerOther.sprite);
+    this.physics.arcade.collide(this.player.sprite, this.playerOther.sprite, this.touching);
+    // this.physics.arcade.collide(this.player.sprite, this.playerOther.sprite, this.touching);
+    this.physics.arcade.overlap(this.player.sprite, kickbox, this.hitRange)//.bind(this);
+    // console.log(this.physics.arcade.overlap(this.player.sprite, kickbox, this.hitRange));
 
+    if (this.physics.arcade.overlap(this.player.sprite, kickbox)) {
+      if (pad1.justPressed(Phaser.Gamepad.XBOX360_A)) {
+        this.player.health = (this.player.health - 10)
+        this.player.sprite.animations.play('hitLight', 0.5, false, false)
+        this.player.sprite.events.onAnimationComplete.add(function(){
+            this.player.sprite.animations.play('idle', 12, true, false)
+        }, this);
+        console.log('lowkick');
+      }
+      if (pad1.justPressed(Phaser.Gamepad.XBOX360_B)) {
+        this.player.health = (this.player.health - 20)
+        this.player.sprite.animations.play('bigHit', 0.1, false, false)
+        this.player.sprite.events.onAnimationComplete.add(function(){
+            this.player.sprite.animations.play('idle', 12, true, false)
+        }, this);
+      }
+
+    }
+    if (this.physics.arcade.overlap(this.player.sprite, punchbox)) {
+      if (pad1.justPressed(Phaser.Gamepad.XBOX360_Y)){
+        this.player.health = (this.player.health - 20)
+        this.player.sprite.animations.play('bigHit', 0.1, false, false)
+        this.player.sprite.events.onAnimationComplete.add(function(){
+            this.player.sprite.animations.play('idle', 12, true, false)
+        }, this);
+      }
+      if (pad1.justPressed(Phaser.Gamepad.XBOX360_B)) {
+        this.player.health = (this.player.health - 10)
+        this.player.sprite.animations.play('bigHit', 0.5, false, false)
+        this.player.sprite.events.onAnimationComplete.add(function(){
+            this.player.sprite.animations.play('idle', 12, true, false)
+        }, this);
+      }
+      if (pad1.justPressed(Phaser.Gamepad.XBOX360_X)) {
+        this.player.health = (this.player.health - 20)
+        this.player.sprite.animations.play('bigHit', 0.5, false, false)
+        this.player.sprite.events.onAnimationComplete.add(function(){
+            this.player.sprite.animations.play('idle', 12, true, false)
+        }, this);
+      }
+    }
 
 
 
@@ -604,35 +710,92 @@ mediFighter.LevelTest.prototype = {
     //   this.keyHandler("standing")
     // }
 
+    if (this.player.health < 1) {
+      this.player.currentState = "dead";
+      canHorizontalMove = false;
+    }
+    if (this.player.currentState === "dead"){
+
+      this.player.sprite.animations.play('ded', 6, false, false )
+      this.player.sprite.body.setSize(70, 50, 0, 29)
+      this.player.sprite.body.velocity.y = -10;
+      this.player.currentState = "game over bitch"
+      this.player.sprite.events.onAnimationComplete.add(function(){
+            this.playerOther.sprite.animations.play('down', 12, true, false)
+
+        }, this);
+
+    }
+    // if (this.playerOther.health < 1) {
+    //   this.playerOther.currentState = "dead"
+    //   canOtherHorizontalMove = false;
+    // }
+    // if (this.playerOther.currentState === "dead"){
+    //   this.playerOther.currentState = "game over bitch"
+    //   this.playerOther.sprite.animations.play('ded', 2, false, false )
+    // }
+
   }, ////////////// End of Update
 
   render: function () {
+    // myText = game.add.text(this.player.sprite.centerX, this.player.sprite.centerY,"text",{font:"bold 12px Arial",fill:"#000"}); // create text
+    // attackBox.drawRect(this.player.sprite.centerX+33, this.player.sprite.centerY-50, 20, 100)
+    // hitboxes.visible = false; // hide myGraphic AND myText
 
-    this.game.debug.body(this.player.sprite);
-    this.game.debug.body(this.playerOther.sprite);
+
+
+    // DEBUG BANANA
+    // this.game.debug.body(this.player.sprite);
+    // this.game.debug.body(this.playerOther.sprite);
+    // hitboxes.forEachAlive(this.renderGroup, this);
+
+
 
   }, ////////////// End of Render
 
-  keyHandler: function(newState) {
+  renderGroup:function(member){
+      this.game.debug.body(member)
+  },
 
-    // newState is the state which this key wants to transition to;
-    // first check if it's allowed to
+  hitRange: function(){
+    console.log("DANGER ZONE");
+  },
+  touching: function() {
+    // console.log("being touched, lel");
 
-    var transitionStates = mediFighter.gameStates[this.player.currentState].nextStates;
-     // Potential next states, based on current state
+  },
+  goFull: function () {
 
+    if (this.game.scale.isFullScreen) {
 
-      if(transitionStates.includes(newState)) {
-        // state was allowed, so transition to this state
+        this.game.scale.stopFullScreen();
+    }
+    else {
+        this.game.scale.startFullScreen(false);
+    }
 
+  },
 
-        this.player.currentState = newState;
-        // console.log('%cNew state: %s', 'font-weight: bold', newState);
-
-        this.changePlayerState(this.player, newState);
-      }
-
-    },
+  // keyHandler: function(newState) {
+  //
+  //   // newState is the state which this key wants to transition to;
+  //   // first check if it's allowed to
+  //
+  //   var transitionStates = mediFighter.gameStates[this.player.currentState].nextStates;
+  //    // Potential next states, based on current state
+  //
+  //
+  //     if(transitionStates.includes(newState)) {
+  //       // state was allowed, so transition to this state
+  //
+  //
+  //       this.player.currentState = newState;
+  //       // console.log('%cNew state: %s', 'font-weight: bold', newState);
+  //
+  //       this.changePlayerState(this.player, newState);
+  //     }
+  //
+  //   },
 
     changePlayerState: function(player, state) {
 
@@ -803,16 +966,20 @@ mediFighter.LevelTest.prototype = {
   },
 
   floorCheck: function() {
-    if (this.player.currentState == "jumpFall" && this.player.sprite.y > 327) {
-      // this.player.currentState = "idle"
-      this.player.sprite.animations.play('idle', 6, true, false)
-      canHorizontalMove = true;
+    if (this.player.currentState !== "dead") {
+      if (this.player.currentState == "jumpFall" && this.player.sprite.y > 327) {
+        // this.player.currentState = "idle"
+        this.player.currentState = "idle"
+        this.player.sprite.animations.play('idle', 6, true, false)
+        canHorizontalMove = true;
+      }
     }
     if (this.playerOther.currentState == "jumpFall" && this.playerOther.sprite.y > 327) {
-      // this.player.currentState = "idle"
-      this.playerOther.sprite.animations.play('idle', 6, true, false)
-      canOtherHorizontalMove = true;
-    }
+        // this.player.currentState = "idle"
+        this.playerOther.sprite.animations.play('idle', 12, true, false)
+        this.playerOther.currentState = "idle"
+        canOtherHorizontalMove = true;
+      }
   },
 
 
@@ -921,7 +1088,7 @@ mediFighter.LevelTest.prototype = {
             if (first === 'kick') {
 
               this.player.currentState = 'attacking'
-              this.player.sprite.animations.play('diveKick', 10, false, false)
+              this.player.sprite.animations.play('diveKick', 12, false, false)
               // Vertical speed
               canHorizontalMove = false
               this.player.sprite.events.onAnimationComplete.add(function(){
